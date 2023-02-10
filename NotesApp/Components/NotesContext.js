@@ -28,7 +28,9 @@ export default function NotesContextProvider(props) {
                 setCategories,
                 setNotes,
                 setNewCategory,
-                setNewNote
+                setNewNote,
+                headerImage,
+                setHeaderImage
             }}
         >
             {props.children}

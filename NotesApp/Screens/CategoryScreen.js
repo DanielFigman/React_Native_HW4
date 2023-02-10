@@ -1,10 +1,12 @@
 import { View, Text, ScrollView, Image, SafeAreaView, TouchableOpacity, TextInput, Keyboard } from 'react-native'
 import React, { useContext, useEffect, useLayoutEffect, useState } from 'react'
 import { useNavigation, useRoute } from '@react-navigation/native';
-import { ArrowLeftIcon, CameraIcon, PencilSquareIcon, PhotoIcon, PlusCircleIcon, PlusIcon, XCircleIcon } from 'react-native-heroicons/outline';
+import { ArrowLeftIcon, CameraIcon, PencilSquareIcon, PhotoIcon, PlusCircleIcon, PlusIcon, XCircleIcon, XMarkIcon } from 'react-native-heroicons/outline';
 import { NotesContext } from '../Components/NotesContext';
 import NoteCard from '../Components/NoteCard';
 import { FAB, Overlay } from 'react-native-elements';
+import * as ImagePicker from 'expo-image-picker';
+
 
 
 const CategoryScreen = () => {
@@ -13,10 +15,14 @@ const CategoryScreen = () => {
     const [currentNote, setCurrentNote] = useState("");
     const [noteContent, setNoteContent] = useState("");
     const [noteImages, setNoteImages] = useState([]);
+    const [thisHeaderImage, setThisHeaderImage] = useState("https://images.unsplash.com/photo-1517842645767-c639042777db?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8bm90ZXN8ZW58MHx8MHx8&w=1000&q=80");
+    const [imageOverlay, setImageOverlay] = useState("");
+    const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
 
     // Use Contexts
     const { notes, setNewNote, headerImage, setHeaderImage } = useContext(NotesContext);
+
 
     // Use Navigation
     const navigation = useNavigation();
@@ -26,9 +32,100 @@ const CategoryScreen = () => {
         title,
     } } = useRoute();
 
-    ///////////////////////////////////////////////////
 
-    let thisHeaderImage = headerImage.filter(cat => cat == title);
+    //Function and variblas 
+
+    const pickHeaderImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsEditing: true,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            setThisHeaderImage(result.assets[0].uri)
+            let newHeaderImages = headerImage.filter(cat => !cat[title]);
+            newHeaderImages.push({ [title]: result.assets[0].uri });
+            setHeaderImage(newHeaderImages);
+        }
+    };
+
+    const pickImage = async () => {
+        let result = await ImagePicker.launchImageLibraryAsync({
+            mediaTypes: ImagePicker.MediaTypeOptions.Images,
+            allowsMultipleSelection: true,
+            selectionLimit: 7,
+            aspect: [4, 3],
+            quality: 1,
+        });
+
+        if (!result.canceled) {
+            let currNoteImages = [];
+            result.assets.forEach(img => currNoteImages.push(img.uri));
+            setNoteImages(currNoteImages);
+        }
+    };
+
+    const showImage = (
+        imageOverlay != "" ?
+            <Overlay
+                overlayStyle={{
+                    backgroundImage: "#0000ffff",
+                    height: -1,
+                    width: 400,
+                    marginTop: 10
+                }}
+                onBackdropPress={() => setImageOverlay("")}
+                isVisible={imageOverlay != ""}
+            >
+                <Image source={{
+                    uri: imageOverlay
+
+                }}
+                    className="h-72 w-full"
+                />
+            </Overlay>
+            :
+            ""
+    );
+
+
+    //Use Effect
+    useEffect(() => {
+        let image = headerImage.filter(cat => cat[title]);
+        if (image.length > 0)
+            setThisHeaderImage(image[0][title])
+    }, [])
+
+
+    useEffect(() => {
+        setNewNote(title, currentNote);
+        setNoteContent("");
+        setNoteImages([]);
+    }, [currentNote])
+
+
+    useEffect(() => {
+        const keyboardDidShowListener = Keyboard.addListener(
+          'keyboardDidShow',
+          () => {
+            setKeyboardVisible(true); // or some other action
+          }
+        );
+        const keyboardDidHideListener = Keyboard.addListener(
+          'keyboardDidHide',
+          () => {
+            setKeyboardVisible(false); // or some other action
+          }
+        );
+    
+        return () => {
+          keyboardDidHideListener.remove();
+          keyboardDidShowListener.remove();
+        };
+      }, []);
+
 
     const numOfNotes = notes.filter(category => category == title).length;
 
@@ -48,9 +145,27 @@ const CategoryScreen = () => {
             images={note.images}
         />)
 
+    const renderImages = noteImages.map((x, index) =>
+        <TouchableOpacity
+            onPress={() => setImageOverlay(x)}
+            key={index}
+        >
+            <Image source={{
+                uri: x
 
-    const toggleOverlay = () => {
+            }}
+                className="h-12 w-12"
+            />
+        </TouchableOpacity>
+    )
+
+
+    const toggleOverlay = (close) => {
         setVisible(!visible);
+        if (close) {
+            setNoteContent("");
+            setNoteImages([]);
+        }
     };
 
     const handleChange = () => {
@@ -68,11 +183,6 @@ const CategoryScreen = () => {
         }
     }
 
-    useEffect(() => {
-        setNewNote(title, currentNote);
-        setNoteContent("");
-        setNoteImages([]);
-    }, [currentNote])
 
 
     return (
@@ -80,7 +190,7 @@ const CategoryScreen = () => {
             <ScrollView >
                 <View className="flex-row">
                     <Image source={{
-                        uri: headerImage === undefined ? "https://images.unsplash.com/photo-1517842645767-c639042777db?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxzZWFyY2h8Mnx8bm90ZXN8ZW58MHx8MHx8&w=1000&q=80" : headerImage
+                        uri: thisHeaderImage
 
                     }}
                         className="h-72 w-full"
@@ -94,9 +204,7 @@ const CategoryScreen = () => {
 
                     <View>
                         <TouchableOpacity
-                            onPress={() => {
-
-                            }}
+                            onPress={pickHeaderImage}
                             className="flex-col mt-48 right-24 space-y-3 items-center item rounded-full w-20 h-20" style={{ backgroundColor: "hsla(0, 100%, 0%, 0.8)", }}>
                             <PencilSquareIcon color={"black"} size={30} style={{ top: 5, }} fill={"white"} />
                             <View className="items-center space-y-0 bottom-2">
@@ -115,6 +223,11 @@ const CategoryScreen = () => {
                         </View>
                     </View>
                 </SafeAreaView>
+
+
+                {/* Note Card */}
+                <NoteCard />
+
             </ScrollView>
             <View className="absolute bottom-0 px-52">
                 <FAB
@@ -147,20 +260,44 @@ const CategoryScreen = () => {
                             onChangeText={text => setNoteContent(text)}
                             multiline={true} />
                     </View>
-                    <View className="flex-row pt-44">
-                        <TouchableOpacity className="flex-1"
-                            onPress={handleChange}>
-                            <PlusCircleIcon size={50} color={"black"} fill="green" />
+                    {isKeyboardVisible ?
+                        <TouchableOpacity
+                            style={{ backgroundColor: "hsla(0, 100%, 0%, 0.8)" }}
+                            className="flex-col items-center justify-center text-white  w-14 h-18  bottom-52 left-80 ml-2 absolute"
+                            onPress={() => { if (Keyboard) Keyboard.dismiss() }}
+                        >
+                            <XMarkIcon color={"white"}/>
+                            <Text className="text-white text-xs">Close</Text>
+                            <Text className="text-white text-xs">Keyboad</Text>
                         </TouchableOpacity>
-                        <TouchableOpacity className="flex-1">
-                            <PhotoIcon size={50} color={"black"} fill="yellowgreen" />
-                        </TouchableOpacity>
-                        <TouchableOpacity className="flex-1">
-                            <CameraIcon size={50} color={"black"} fill="gray" />
-                        </TouchableOpacity>
-                        <TouchableOpacity onPress={toggleOverlay}>
-                            <XCircleIcon color={"black"} size={50} fill="red" />
-                        </TouchableOpacity>
+                        :
+                        ""
+                    }
+
+                    <View>
+                        {showImage}
+                    </View>
+                    <View className="flex-row pt-14 space-x-2 flex-1">
+                        {renderImages}
+                    </View>
+                    <View className="h-0 w-full relative justify-between">
+                        <View className="flex-row bottom-12 space-x-14">
+                            <TouchableOpacity className="flex-1"
+                                onPress={handleChange}>
+                                <PlusCircleIcon size={50} color={"black"} fill="green" />
+                            </TouchableOpacity>
+                            <TouchableOpacity className="flex-1"
+                                onPress={pickImage}
+                            >
+                                <PhotoIcon size={50} color={"black"} fill="yellowgreen" />
+                            </TouchableOpacity>
+                            <TouchableOpacity className="flex-1">
+                                <CameraIcon size={50} color={"black"} fill="gray" />
+                            </TouchableOpacity>
+                            <TouchableOpacity onPress={() => toggleOverlay(true)}>
+                                <XCircleIcon color={"black"} size={50} fill="red" />
+                            </TouchableOpacity>
+                        </View>
                     </View>
                 </Overlay>
             </View>
