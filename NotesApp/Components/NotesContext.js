@@ -9,14 +9,17 @@ export default function NotesContextProvider(props) {
     const [newCategory, setNewCategory] = useState("");
     const [categories, setCategories] = useState([]);
     const [notes, setNotes] = useState([]);
-    const [headerImage, setHeaderImage] = useState([]);
+    const [headerImage, setHeaderImages] = useState([]);
 
     const setNewNote = (category, note) => {
-        let newNotes = notes.filter(cat => cat !== category);
-        let categoryNotes = notes.filter(cat => cat === category);
-        categoryNotes.push(note);
-        newNotes.push({ [category]: categoryNotes });
+        let newNotes = { ...notes };
+        if (newNotes[category]) {
+            newNotes[category].push(note);
+        } else {
+            newNotes[category] = [note];
+        }
         setNotes(newNotes);
+        console.log(notes)
     }
 
     return (
@@ -30,7 +33,7 @@ export default function NotesContextProvider(props) {
                 setNewCategory,
                 setNewNote,
                 headerImage,
-                setHeaderImage
+                setHeaderImages
             }}
         >
             {props.children}

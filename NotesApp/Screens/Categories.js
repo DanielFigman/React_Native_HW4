@@ -42,7 +42,6 @@ const Categories = () => {
     const handleChange = () => {
         if (newCategory != "") {
             setCategories([...categories, newCategory])
-            setNotes([...notes, { [newCategory]: [] }])
             setVisible(!visible);
         }
     }

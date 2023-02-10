@@ -8,7 +8,7 @@ const CategoryCard = ({ title }) => {
     const navigation = useNavigation();
     const {notes} = useContext(NotesContext);
 
-    const numOfNotes = notes.filter(category => category == title).length;
+    const numOfNotes = notes && notes[title] ? notes[title].length : 0;
     
 
     return (

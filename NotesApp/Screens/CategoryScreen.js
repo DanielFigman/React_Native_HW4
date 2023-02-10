@@ -19,9 +19,9 @@ const CategoryScreen = () => {
     const [imageOverlay, setImageOverlay] = useState("");
     const [isKeyboardVisible, setKeyboardVisible] = useState(false);
 
-
+    
     // Use Contexts
-    const { notes, setNewNote, headerImage, setHeaderImage } = useContext(NotesContext);
+    const { notes, setNewNote, headerImage, setHeaderImages } = useContext(NotesContext);
 
 
     // Use Navigation
@@ -45,9 +45,9 @@ const CategoryScreen = () => {
 
         if (!result.canceled) {
             setThisHeaderImage(result.assets[0].uri)
-            let newHeaderImages = headerImage.filter(cat => !cat[title]);
-            newHeaderImages.push({ [title]: result.assets[0].uri });
-            setHeaderImage(newHeaderImages);
+            let newHeaderImages = {...headerImage}
+            newHeaderImages[title] = result.assets[0].uri
+            setHeaderImages(newHeaderImages);
         }
     };
 
@@ -93,41 +93,49 @@ const CategoryScreen = () => {
 
     //Use Effect
     useEffect(() => {
-        let image = headerImage.filter(cat => cat[title]);
-        if (image.length > 0)
-            setThisHeaderImage(image[0][title])
+        let image = headerImage[title]
+        if (image)
+            setThisHeaderImage(image)
     }, [])
 
 
     useEffect(() => {
-        setNewNote(title, currentNote);
+        if (currentNote != "") {
+            setNewNote(title, currentNote);
+        }
+    }, [currentNote])
+
+    useEffect(() => {
         setNoteContent("");
         setNoteImages([]);
-    }, [currentNote])
+    }, [notes])
+    
+
+
 
 
     useEffect(() => {
         const keyboardDidShowListener = Keyboard.addListener(
-          'keyboardDidShow',
-          () => {
-            setKeyboardVisible(true); // or some other action
-          }
+            'keyboardDidShow',
+            () => {
+                setKeyboardVisible(true); // or some other action
+            }
         );
         const keyboardDidHideListener = Keyboard.addListener(
-          'keyboardDidHide',
-          () => {
-            setKeyboardVisible(false); // or some other action
-          }
+            'keyboardDidHide',
+            () => {
+                setKeyboardVisible(false); // or some other action
+            }
         );
-    
+
         return () => {
-          keyboardDidHideListener.remove();
-          keyboardDidShowListener.remove();
+            keyboardDidHideListener.remove();
+            keyboardDidShowListener.remove();
         };
-      }, []);
+    }, []);
 
 
-    const numOfNotes = notes.filter(category => category == title).length;
+    const numOfNotes = notes && notes[title] ? notes[title].length : 0;
 
     useLayoutEffect(() => {
         navigation.setOptions({
@@ -136,22 +144,24 @@ const CategoryScreen = () => {
 
     }, []);
 
-    const filteredNotes = notes.filter(note => note === title)
 
-    const renderNotes = filteredNotes.map(note =>
+
+    const renderNotes = notes[title] ? notes[title].map((note, index) =>
         <NoteCard
+            key={index}
             date={note.date}
-            content={note.contet}
+            content={note.content}
             images={note.images}
-        />)
+        />) : "";
 
-    const renderImages = noteImages.map((x, index) =>
+
+    const renderImages = noteImages.map((imgUri, index) =>
         <TouchableOpacity
             onPress={() => setImageOverlay(x)}
             key={index}
         >
             <Image source={{
-                uri: x
+                uri: imgUri
 
             }}
                 className="h-12 w-12"
@@ -170,15 +180,15 @@ const CategoryScreen = () => {
 
     const handleChange = () => {
         if (noteContent != "" && noteImages.length !== 0) {
-            setCurrentNote({ content: noteContent, images: [noteImages], date: Date.now() });
+            setCurrentNote({ content: noteContent, images: noteImages, date: new Date(Date.now()).toDateString() + " - " + new Date(Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) });
             setVisible(false);
         }
         else if (noteContent != "") {
-            setCurrentNote({ content: noteContent, images: [], date: Date.now() });
+            setCurrentNote({ content: noteContent, images: [], date: new Date(Date.now()).toDateString() + " - " + new Date(Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) });
             setVisible(false);
         }
         else if (noteImages.length !== 0) {
-            setCurrentNote({ content: "", images: [noteImages], date: Date.now() });
+            setCurrentNote({ content: "", images: noteImages, date: new Date(Date.now()).toDateString() + " - " + new Date(Date.now()).toLocaleTimeString([], { hour: '2-digit', minute: "2-digit" }) });
             setVisible(false);
         }
     }
@@ -226,7 +236,7 @@ const CategoryScreen = () => {
 
 
                 {/* Note Card */}
-                <NoteCard />
+                {renderNotes}
 
             </ScrollView>
             <View className="absolute bottom-0 px-52">
@@ -266,7 +276,7 @@ const CategoryScreen = () => {
                             className="flex-col items-center justify-center text-white  w-14 h-18  bottom-52 left-80 ml-2 absolute"
                             onPress={() => { if (Keyboard) Keyboard.dismiss() }}
                         >
-                            <XMarkIcon color={"white"}/>
+                            <XMarkIcon color={"white"} />
                             <Text className="text-white text-xs">Close</Text>
                             <Text className="text-white text-xs">Keyboad</Text>
                         </TouchableOpacity>
