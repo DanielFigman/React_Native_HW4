@@ -2,7 +2,7 @@ import { View, Text, SafeAreaView, TouchableOpacity, TextInput, Image } from 're
 import React, { useContext, useEffect, useLayoutEffect, useState } from 'react'
 import { useNavigation, useRoute } from '@react-navigation/native';
 import { ScrollView } from 'react-native';
-import { ArrowLeftIcon, PhotoIcon } from 'react-native-heroicons/outline';
+import { ArrowLeftIcon, PhotoIcon, TrashIcon } from 'react-native-heroicons/outline';
 import * as ImagePicker from 'expo-image-picker';
 import { NotesContext } from '../Components/NotesContext';
 import { Overlay } from 'react-native-elements';
@@ -27,7 +27,7 @@ const NoteScreen = () => {
     const [hasChanged, setHasChanged] = useState(false);
 
 
-    const { updateNote } = useContext(NotesContext)
+    const { updateNote, removeNote } = useContext(NotesContext)
 
 
     useEffect(() => {
@@ -47,7 +47,10 @@ const NoteScreen = () => {
     };
 
 
-
+    const rmNote = () => {
+        navigation.goBack();
+        removeNote(title, id);
+    }
 
 
     // const {set} = useContext(second)
@@ -145,12 +148,20 @@ const NoteScreen = () => {
                     {renderImages}
                 </ScrollView>
             </ScrollView>
-            <TouchableOpacity className="bottom-5 items-center"
-                onPress={pickImage}
-            >
-                <PhotoIcon size={50} color={"black"} fill="yellowgreen" />
-            </TouchableOpacity>
+            <View className="bottom-5 items-center flex-row mb-5 px-5">
+                <TouchableOpacity className="flex-1"
+                    onPress={pickImage}
+                >
+                    <PhotoIcon size={50} color={"black"} fill="yellowgreen" />
+                </TouchableOpacity>
+                <TouchableOpacity className=""
+                    onPress={rmNote}
+                >
+                    <TrashIcon size={50} color={"black"} fill="gray" />
+                </TouchableOpacity>
+            </View>
         </SafeAreaView>
+
     )
 }
 
