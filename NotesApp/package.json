@@ -14,19 +14,20 @@
     "@rneui/base": "^4.0.0-rc.7",
     "@rneui/themed": "^4.0.0-rc.7",
     "expo": "~47.0.12",
+    "expo-camera": "~13.1.0",
+    "expo-image-picker": "~14.0.2",
     "expo-status-bar": "~1.4.2",
     "nativewind": "^2.0.11",
     "react": "18.1.0",
     "react-native": "0.70.5",
+    "react-native-elements": "3.4.3",
     "react-native-floating-action": "^1.22.0",
     "react-native-heroicons": "^3.2.0",
     "react-native-safe-area-context": "4.4.1",
     "react-native-screens": "~3.18.0",
     "react-native-svg": "13.4.0",
-    "tailwindcss": "^3.2.4",
-    "react-native-elements": "3.4.3",
-    "expo-camera": "~13.1.0",
-    "expo-image-picker": "~14.0.2"
+    "react-native-uuid": "^2.0.1",
+    "tailwindcss": "^3.2.4"
   },
   "devDependencies": {
     "@babel/core": "^7.12.9"

@@ -2,10 +2,11 @@ import { View, Text, SafeAreaView, ScrollView, Image, TouchableOpacity, TextInpu
 import React, { useContext, useLayoutEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
 import { Bars3Icon, FolderPlusIcon, PlusCircleIcon, PlusIcon, TrashIcon, UserIcon, XCircleIcon } from 'react-native-heroicons/outline';
-import { FloatingAction } from "react-native-floating-action";
-import { Button, FAB, Overlay } from 'react-native-elements';
+import {FAB, Overlay } from 'react-native-elements';
 import CategoryCard from '../Components/CategoryCard';
 import { NotesContext } from '../Components/NotesContext';
+import uuid from 'react-native-uuid';
+
 
 
 
@@ -19,14 +20,13 @@ const Categories = () => {
     const [visible, setVisible] = useState(false);
 
 
-
-
-    const showCategories = categories.length > 0 ? categories.map((cat, index) =>
+    const showCategories = categories.length > 0 ? categories.map(cat =>
         <CategoryCard
-            key={index}
-            title={cat}
+            key={cat.id}
+            id={cat.id}
+            title={cat.category}
         />) : "";
-
+ 
 
     const toggleOverlay = () => {
         setVisible(!visible);
@@ -41,38 +41,44 @@ const Categories = () => {
 
     const handleChange = () => {
         if (newCategory != "") {
-            setCategories([...categories, newCategory])
-            setVisible(!visible);
+            const test = categories.filter(obj => obj.category.trim() === newCategory.trim()).length > 0 ? false : true;
+            if (test) {
+                setCategories([...categories, {category: newCategory, id:uuid.v4()}])
+                setVisible(!visible);
+            }
+            else{
+                alert("Category with the same name already exist")
+            }
         }
     }
 
 
-    const actions = [
-        {
-            text: "Accessibility",
-            color: "#e7d287",
-            name: "bt_accessibility",
-            position: 2
-        },
-        {
-            text: "Language",
-            color: "#e7d287",
-            name: "bt_language",
-            position: 1
-        },
-        {
-            text: "Location",
-            color: "#e7d287",
-            name: "bt_room",
-            position: 3
-        },
-        {
-            text: "Video",
-            color: "#e7d287",
-            name: "bt_videocam",
-            position: 4
-        }
-    ];
+    // const actions = [
+    //     {
+    //         text: "Accessibility",
+    //         color: "#e7d287",
+    //         name: "bt_accessibility",
+    //         position: 2
+    //     },
+    //     {
+    //         text: "Language",
+    //         color: "#e7d287",
+    //         name: "bt_language",
+    //         position: 1
+    //     },
+    //     {
+    //         text: "Location",
+    //         color: "#e7d287",
+    //         name: "bt_room",
+    //         position: 3
+    //     },
+    //     {
+    //         text: "Video",
+    //         color: "#e7d287",
+    //         name: "bt_videocam",
+    //         position: 4
+    //     }
+    // ];
 
 
     return (
@@ -107,13 +113,13 @@ const Categories = () => {
             </ScrollView>
 
             <View className="flex-row pb-20 ">
-                <FloatingAction
+                {/* <FloatingAction
                     actions={actions}
                     floatingIcon={<Bars3Icon color={"#FFFFFF"} />}
                     color={"#967b1d"}
                     position={'left'}
                     showBackground={false}
-                />
+                /> */}
                 <FAB
                     title="Add Category"
                     placement="right"

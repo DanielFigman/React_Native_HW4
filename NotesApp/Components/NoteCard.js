@@ -3,13 +3,20 @@ import React, { useContext, useState } from 'react'
 import { TouchableOpacity } from 'react-native'
 import { NotesContext } from './NotesContext'
 import { Overlay } from 'react-native-elements'
+import { useNavigation } from '@react-navigation/native'
 
 
 
 
-const NoteCard = ({ date, content, images }) => {
+const NoteCard = ({ title, id, date, content, images }) => {
 
     const [imageOverlay, setImageOverlay] = useState("");
+    const [deleteOverlay, setDeleteOverlay] = useState(false)
+
+    const navigation = useNavigation();
+
+    const { removeNote } = useContext(NotesContext);
+
 
 
     const renderImages = images != undefined ? images.map((imgUri, index) =>
@@ -30,7 +37,7 @@ const NoteCard = ({ date, content, images }) => {
         imageOverlay != "" ?
             <Overlay
                 overlayStyle={{
-                    backgroundImage: "#0000ffff",
+                    backgroundColor: "white",
                     height: -1,
                     width: 400,
                     marginTop: 10
@@ -49,10 +56,47 @@ const NoteCard = ({ date, content, images }) => {
             ""
     );
 
+    const handlePress = () => {
+        navigation.navigate("NoteScreen", {
+            title,
+            id,
+            date,
+            content,
+            images
+        });
+    }
+
+    const handleLongPress = () => {
+        setDeleteOverlay(true)
+    }
+
+
+
     return (
         <View className="space-y-2">
+
             <View className="shadow-2xl bg-gray-400 m-5 rounded-3xl">
-                <TouchableOpacity>
+                <View className="border-stone-900">
+                    <Overlay
+                        overlayStyle={{
+                            backgroundColor: "white",
+
+                        }}
+                        onBackdropPress={() => setDeleteOverlay(false)}
+                        isVisible={deleteOverlay}
+                    >
+                        <TouchableOpacity onPress={() => {
+                            removeNote(title, id);
+                            setDeleteOverlay(false);
+                        }}>
+                            <Text className="text-2xl text-red-500">Delete note</Text>
+                        </TouchableOpacity>
+                    </Overlay>
+                </View>
+                <TouchableOpacity
+                    onPress={handlePress}
+                    onLongPress={handleLongPress}
+                >
                     <View className="px-3">
                         <Text className="font-bold text-lg pt-2 text-center text-gray-700">{date}</Text>
                     </View>
@@ -66,7 +110,7 @@ const NoteCard = ({ date, content, images }) => {
                         paddingHorizontal: 15,
                         padding: 10,
                         paddingBottom: 20,
-                        
+
                     }}
                     horizontal
                     showsHorizontalScrollIndicator={false}
@@ -75,7 +119,9 @@ const NoteCard = ({ date, content, images }) => {
                     {renderImages}
                 </ScrollView>
 
-                <TouchableOpacity>
+                <TouchableOpacity
+                    onPress={handlePress}
+                    onLongPress={handleLongPress}>
                     <Text className="flex-row p-3 text-right font-bold">
                         View note...</Text>
                 </TouchableOpacity>

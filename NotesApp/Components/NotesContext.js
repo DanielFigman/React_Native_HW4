@@ -19,7 +19,39 @@ export default function NotesContextProvider(props) {
             newNotes[category] = [note];
         }
         setNotes(newNotes);
-        console.log(notes)
+    }
+
+    const updateNote = (category, noteID, noteContent, noteImages) => {
+        debugger;
+        const newNotes = { ...notes }
+        let changedNote = newNotes[category].filter(obj => obj.id == noteID);
+        changedNote[0].content = noteContent;
+        changedNote[0].images = noteImages;
+
+        setNotes(newNotes);
+
+
+    }
+
+    const removeNote = (category, noteID) => {
+        const newNotes = { ...notes };
+        const catNotes = newNotes[category];
+        if (newNotes[category])
+            delete newNotes[category]
+        const newCatNotes = catNotes.filter(note => note.id !== noteID);
+        newNotes[category] = newCatNotes;
+        setNotes(newNotes);
+    }
+
+    const removeCategory = (category, id) => {
+        const newCategories = categories.filter(cat => cat.id !== id);
+
+        const newNotes = { ...notes };
+        if (newNotes[category])
+            delete newNotes[category];
+
+        setCategories(newCategories);
+        setNotes(newNotes);
     }
 
     return (
@@ -33,7 +65,10 @@ export default function NotesContextProvider(props) {
                 setNewCategory,
                 setNewNote,
                 headerImage,
-                setHeaderImages
+                setHeaderImages,
+                removeNote,
+                removeCategory,
+                updateNote
             }}
         >
             {props.children}
