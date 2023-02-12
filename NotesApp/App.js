@@ -17,7 +17,6 @@ export default function App() {
           <Stack.Screen name="Categories" component={Categories} />
           <Stack.Screen name="CategoryScreen" component={CategoryScreen} />
           <Stack.Screen name="NoteScreen" component={NoteScreen} />
-
         </Stack.Navigator>
       </NavigationContainer>
     </NotesContextProvider> 

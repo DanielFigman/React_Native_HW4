@@ -25,6 +25,9 @@ const NoteScreen = () => {
     const [thisContent, setThisContent] = useState(content);
     const [theseImages, setTheseImages] = useState(images);
     const [hasChanged, setHasChanged] = useState(false);
+    const [deleteOverlay, setDeleteOverlay] = useState(false)
+    const [imgUri, setImageUri] = useState("")
+
 
 
     const { updateNote, removeNote } = useContext(NotesContext)
@@ -50,6 +53,17 @@ const NoteScreen = () => {
     const rmNote = () => {
         navigation.goBack();
         removeNote(title, id);
+    }
+
+    const handleLongPress = (imgUri) => {
+        setImageUri(imgUri);
+        if (imgUri != "")
+            setDeleteOverlay(true);
+    }
+
+    const removeImage = () => {
+        let newImages = theseImages.filter(uri => uri != imgUri);
+        setTheseImagesFunc(newImages);
     }
 
 
@@ -80,7 +94,9 @@ const NoteScreen = () => {
     const renderImages = theseImages.length > 0 ? theseImages.map((imgUri, index) =>
         <TouchableOpacity
             onPress={() => setImageOverlay(imgUri)}
+            onLongPress={() => handleLongPress(imgUri)}
             key={index}
+
         >
             <Image source={{
                 uri: imgUri
@@ -136,6 +152,23 @@ const NoteScreen = () => {
                 >
                 </TextInput>
                 {showImage}
+                <View className="border-stone-900">
+                    <Overlay
+                        overlayStyle={{
+                            backgroundColor: "white",
+
+                        }}
+                        onBackdropPress={() => setDeleteOverlay(false)}
+                        isVisible={deleteOverlay}
+                    >
+                        <TouchableOpacity onPress={() => {
+                            removeImage();
+                            setDeleteOverlay(false);
+                        }}>
+                            <Text className="text-2xl text-red-500">Delete Image</Text>
+                        </TouchableOpacity>
+                    </Overlay>
+                </View>
                 <ScrollView
                     contentContainerStyle={{
                         padding: 50,

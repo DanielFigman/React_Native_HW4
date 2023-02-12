@@ -1,7 +1,7 @@
 import { View, Text, SafeAreaView, ScrollView, Image, TouchableOpacity, TextInput, Keyboard } from 'react-native'
 import React, { useContext, useLayoutEffect, useState } from 'react'
 import { useNavigation } from '@react-navigation/native';
-import { Bars3Icon, FolderPlusIcon, PlusCircleIcon, PlusIcon, TrashIcon, UserIcon, XCircleIcon } from 'react-native-heroicons/outline';
+import {FolderPlusIcon, PlusCircleIcon, XCircleIcon } from 'react-native-heroicons/outline';
 import {FAB, Overlay } from 'react-native-elements';
 import CategoryCard from '../Components/CategoryCard';
 import { NotesContext } from '../Components/NotesContext';
@@ -52,35 +52,6 @@ const Categories = () => {
         }
     }
 
-
-    // const actions = [
-    //     {
-    //         text: "Accessibility",
-    //         color: "#e7d287",
-    //         name: "bt_accessibility",
-    //         position: 2
-    //     },
-    //     {
-    //         text: "Language",
-    //         color: "#e7d287",
-    //         name: "bt_language",
-    //         position: 1
-    //     },
-    //     {
-    //         text: "Location",
-    //         color: "#e7d287",
-    //         name: "bt_room",
-    //         position: 3
-    //     },
-    //     {
-    //         text: "Video",
-    //         color: "#e7d287",
-    //         name: "bt_videocam",
-    //         position: 4
-    //     }
-    // ];
-
-
     return (
 
         <View className="bg-stone-200 flex h-full">
@@ -113,13 +84,6 @@ const Categories = () => {
             </ScrollView>
 
             <View className="flex-row pb-20 ">
-                {/* <FloatingAction
-                    actions={actions}
-                    floatingIcon={<Bars3Icon color={"#FFFFFF"} />}
-                    color={"#967b1d"}
-                    position={'left'}
-                    showBackground={false}
-                /> */}
                 <FAB
                     title="Add Category"
                     placement="right"

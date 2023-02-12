@@ -1,4 +1,3 @@
-import { View, Text } from 'react-native'
 import React, { createContext, useState } from 'react'
 
 export const NotesContext = createContext();
@@ -22,15 +21,12 @@ export default function NotesContextProvider(props) {
     }
 
     const updateNote = (category, noteID, noteContent, noteImages) => {
-        debugger;
         const newNotes = { ...notes }
         let changedNote = newNotes[category].filter(obj => obj.id == noteID);
         changedNote[0].content = noteContent;
         changedNote[0].images = noteImages;
 
         setNotes(newNotes);
-
-
     }
 
     const removeNote = (category, noteID) => {
@@ -54,6 +50,15 @@ export default function NotesContextProvider(props) {
         setNotes(newNotes);
     }
 
+    const removeImage = (category, noteID, imgUri) => {
+        const newNotes = { ...notes }
+        let changedNote = newNotes[category].filter(obj => obj.id == noteID);
+        const images = changedNote[0].images.filter(uri => uri !== imgUri)
+        changedNote[0].images = images;
+
+        setNotes(newNotes);
+    }
+
     return (
         <NotesContext.Provider
             value={{
@@ -68,7 +73,8 @@ export default function NotesContextProvider(props) {
                 setHeaderImages,
                 removeNote,
                 removeCategory,
-                updateNote
+                updateNote,
+                removeImage
             }}
         >
             {props.children}

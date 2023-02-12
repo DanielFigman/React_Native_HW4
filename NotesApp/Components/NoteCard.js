@@ -11,17 +11,23 @@ import { useNavigation } from '@react-navigation/native'
 const NoteCard = ({ title, id, date, content, images }) => {
 
     const [imageOverlay, setImageOverlay] = useState("");
-    const [deleteOverlay, setDeleteOverlay] = useState(false)
+    const [deleteOverlay, setDeleteOverlay] = useState(false);
+    const [deleteImageOverlay, setDeleteImageOverlay] = useState(false);
+    const [imgUri, setImageUri] = useState("");
+
+
+
 
     const navigation = useNavigation();
 
-    const { removeNote } = useContext(NotesContext);
+    const { removeNote, removeImage } = useContext(NotesContext);
 
 
 
     const renderImages = images != undefined ? images.map((imgUri, index) =>
         <TouchableOpacity
             onPress={() => setImageOverlay(imgUri)}
+            onLongPress={() => handleLongImagePress(imgUri)}
             key={index}
         >
             <Image source={{
@@ -70,6 +76,12 @@ const NoteCard = ({ title, id, date, content, images }) => {
         setDeleteOverlay(true)
     }
 
+    const handleLongImagePress = (imgUri) => {
+        setImageUri(imgUri);
+        if (imgUri != "")
+            setDeleteImageOverlay(true);
+    }
+
 
 
     return (
@@ -90,6 +102,22 @@ const NoteCard = ({ title, id, date, content, images }) => {
                             setDeleteOverlay(false);
                         }}>
                             <Text className="text-2xl text-red-500">Delete note</Text>
+                        </TouchableOpacity>
+                    </Overlay>
+
+                    <Overlay
+                        overlayStyle={{
+                            backgroundColor: "white",
+
+                        }}
+                        onBackdropPress={() => setDeleteImageOverlay(false)}
+                        isVisible={deleteImageOverlay}
+                    >
+                        <TouchableOpacity onPress={() => {
+                            removeImage(title, id, imgUri);
+                            setDeleteImageOverlay(false);
+                        }}>
+                            <Text className="text-2xl text-red-500">Delete image</Text>
                         </TouchableOpacity>
                     </Overlay>
                 </View>
