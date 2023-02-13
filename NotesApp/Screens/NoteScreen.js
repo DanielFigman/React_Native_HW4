@@ -36,6 +36,7 @@ const NoteScreen = () => {
     useEffect(() => {
         if (hasChanged) {
             updateNote(title, id, thisContent, theseImages);
+            setHasChanged(false);
         }
     }, [hasChanged]);
 
@@ -146,6 +147,7 @@ const NoteScreen = () => {
                 </View>
                 <TextInput
                     multiline
+                    keyboardAppearance='dark'
                     defaultValue={thisContent}
                     className="text-3xl px-5 mt-10 mx-5 shadow-2xl bg-gray-200"
                     onEndEditing={event => setThisContentFunc(event.nativeEvent.text)}

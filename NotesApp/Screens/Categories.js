@@ -109,6 +109,7 @@ const Categories = () => {
                         <Text className="text-3xl font-bold text-center mt-5">New Category</Text>
                         <TextInput
                             placeholder='Category Name'
+                            keyboardAppearance='dark'
                             className="bg-stone-300 h-full text-center font-bold text-2xl mt-10"
                             onChangeText={text => setNewCategory(text)} />
                         <View className="flex-row mt-10">
