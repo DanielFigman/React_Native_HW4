@@ -1,7 +1,7 @@
 import { View, Text, ScrollView, Image, SafeAreaView, TouchableOpacity, TextInput, Keyboard } from 'react-native'
 import React, { useContext, useEffect, useLayoutEffect, useState } from 'react'
-import {useNavigation, useRoute } from '@react-navigation/native';
-import { ArrowLeftIcon,PencilSquareIcon, PhotoIcon, PlusCircleIcon, PlusIcon, XCircleIcon} from 'react-native-heroicons/outline';
+import { useNavigation, useRoute } from '@react-navigation/native';
+import { ArrowLeftIcon, PencilSquareIcon, PhotoIcon, PlusCircleIcon, PlusIcon, XCircleIcon } from 'react-native-heroicons/outline';
 import { NotesContext } from '../Components/NotesContext';
 import NoteCard from '../Components/NoteCard';
 import { FAB, Overlay } from 'react-native-elements';
@@ -219,12 +219,14 @@ const CategoryScreen = () => {
                     </View>
                 </View>
                 <SafeAreaView>
-                    <View className="shadow bg-gray-300 m-5 rounded-md">
-                        <View className="mt-3 flex-row px-5 space-x-16">
-                            <Text className="text-center text-5xl font-bold">{title}</Text>
-                            <Text className="text-5xl font-bold flex-1">»</Text>
-                            <Text className="text-5xl font-bold">{numOfNotes}</Text>
+                    <View className="shadow flex-row bg-gray-300 m-5 rounded-md space-x-16 px-5 mt-3 ">
+                        <View className="flex-1 w-9/12">
+                            <Text numberOfLines={1} className="text-left text-3xl font-bold">{title}</Text>
                         </View>
+                        <View>
+                            <Text className="text-3xl font-bold">{numOfNotes}</Text>
+                        </View>
+
                     </View>
                 </SafeAreaView>
 
